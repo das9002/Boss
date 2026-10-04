@@ -89,10 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await ApiService.login(email, password);
+            Swal.fire({
+                icon: 'success',
+                title: '¡Bienvenido!',
+                text: 'Inicio de sesión exitoso',
+                timer: 1500,
+                showConfirmButton: false
+            });
             checkAuth();
             loginForm.reset();
         } catch (err) {
-            showAuthAlert(err.message, 'danger');
+            showAuthAlert(err.message, 'error');
         }
     });
 
@@ -105,27 +112,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await ApiService.register(nombre, email, password, rol);
+            Swal.fire({
+                icon: 'success',
+                title: '¡Registro Exitoso!',
+                text: 'Tu cuenta ha sido creada correctamente',
+                timer: 1500,
+                showConfirmButton: false
+            });
             checkAuth();
             registerForm.reset();
         } catch (err) {
-            showAuthAlert(err.message, 'danger');
+            showAuthAlert(err.message, 'error');
         }
     });
 
     logoutBtn.addEventListener('click', () => {
-        ApiService.clearToken();
-        checkAuth();
+        Swal.fire({
+            title: '¿Cerrar sesión?',
+            text: 'Tendrás que ingresar tus credenciales de nuevo',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                ApiService.clearToken();
+                checkAuth();
+            }
+        });
     });
 
     window.addEventListener('auth-expired', () => {
         checkAuth();
-        showAuthAlert('Su sesión ha caducado. Inicie sesión nuevamente.', 'danger');
+        showAuthAlert('Su sesión ha caducado. Inicie sesión nuevamente.', 'warning');
     });
 
-    function showAuthAlert(msg, type) {
-        authAlert.textContent = msg;
-        authAlert.className = `alert alert-${type}`;
-        authAlert.classList.remove('hidden');
+    function showAuthAlert(msg, type = 'error') {
+        Swal.fire({
+            icon: type,
+            title: type === 'error' ? 'Error' : 'Aviso',
+            text: msg
+        });
     }
 
     // --- NAVIGATION EVENTS ---
@@ -215,7 +242,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             proyectoModal.style.display = 'flex';
         } catch (err) {
-            alert('Error al cargar datos del proyecto: ' + err.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al cargar datos del proyecto: ' + err.message
+            });
         }
     }
 
@@ -231,23 +262,63 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (currentEditingProyectoId) {
                 await ApiService.updateProyecto(currentEditingProyectoId, payload);
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Actualizado!',
+                    text: 'El proyecto se actualizó correctamente',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             } else {
                 await ApiService.createProyecto(payload);
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Guardado!',
+                    text: 'El proyecto fue creado correctamente',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             }
             proyectoModal.style.display = 'none';
             loadProyectos();
         } catch (err) {
-            alert('Error al guardar proyecto: ' + err.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al guardar',
+                text: err.message
+            });
         }
     });
 
     async function handleDeleteProyecto(id) {
-        if (confirm('¿Está seguro de que desea eliminar este proyecto?')) {
+        const result = await Swal.fire({
+            title: '¿Está seguro?',
+            text: 'No podrá revertir esta acción',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
             try {
                 await ApiService.deleteProyecto(id);
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Eliminado!',
+                    text: 'El proyecto ha sido eliminado',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
                 loadProyectos();
             } catch (err) {
-                alert('Error al eliminar el proyecto: ' + err.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al eliminar',
+                    text: err.message
+                });
             }
         }
     }
@@ -305,10 +376,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await ApiService.cambiarRol(userId, nuevoRol);
+            Swal.fire({
+                icon: 'success',
+                title: 'Rol Actualizado',
+                text: 'El rol del usuario ha sido actualizado correctamente',
+                timer: 1500,
+                showConfirmButton: false
+            });
             rolModal.style.display = 'none';
             loadUsuarios();
         } catch (err) {
-            alert('Error al cambiar rol: ' + err.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al cambiar rol',
+                text: err.message
+            });
         }
     });
 
