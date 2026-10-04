@@ -26,14 +26,38 @@ public class ProyectoController {
         return ResponseEntity.ok(proyectoService.obtenerTodos());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProyectoResponseDTO> obtenerProyectoPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(proyectoService.obtenerPorId(id));
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<ProyectoResponseDTO>> listarProyectosPorUsuario(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(proyectoService.obtenerPorUsuarioId(usuarioId));
+    }
+
     @PostMapping
     public ResponseEntity<ProyectoResponseDTO> crearProyecto(
             @Valid @RequestBody ProyectoRequestDTO dto,
             Authentication authentication){
 
-        String emailUsusario = authentication.getName();
+        String emailUsuario = authentication.getName();
 
-        ProyectoResponseDTO creado = proyectoService.crearProyecto(dto, emailUsusario);
+        ProyectoResponseDTO creado = proyectoService.crearProyecto(dto, emailUsuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProyectoResponseDTO> actualizarProyecto(
+            @PathVariable Long id,
+            @Valid @RequestBody ProyectoRequestDTO dto) {
+        ProyectoResponseDTO actualizado = proyectoService.actualizarProyecto(id, dto);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarProyecto(@PathVariable Long id) {
+        proyectoService.eliminarProyecto(id);
+        return ResponseEntity.noContent().build();
     }
 }
