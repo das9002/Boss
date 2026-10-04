@@ -1,5 +1,6 @@
 package finalpoo.final_boss.Usuarios.Entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import finalpoo.final_boss.Rol.Entity.RolEntity;
 import jakarta.persistence.*;
 
@@ -20,6 +21,7 @@ public class UsuarioEntity {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "PASSWORD_HASH", nullable = false, length = 255)
     private String passwordHash;
 
