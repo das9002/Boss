@@ -36,18 +36,23 @@ class ApiService {
 
     static clearToken() {
         this.eraseCookie('jwt_token');
-        localStorage.removeItem('user_info');
+        this.eraseCookie('user_info');
     }
 
     static setUserInfo(user) {
         if (!user) return;
         const { token, ...userWithoutToken } = user;
-        localStorage.setItem('user_info', JSON.stringify(userWithoutToken));
+        this.setCookie('user_info', encodeURIComponent(JSON.stringify(userWithoutToken)), 1);
     }
 
     static getUserInfo() {
-        const info = localStorage.getItem('user_info');
-        return info ? JSON.parse(info) : null;
+        const info = this.getCookie('user_info');
+        if (!info) return null;
+        try {
+            return JSON.parse(decodeURIComponent(info));
+        } catch (e) {
+            return null;
+        }
     }
 
     static async request(endpoint, options = {}) {
