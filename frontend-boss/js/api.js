@@ -40,7 +40,9 @@ class ApiService {
     }
 
     static setUserInfo(user) {
-        localStorage.setItem('user_info', JSON.stringify(user));
+        if (!user) return;
+        const { token, ...userWithoutToken } = user;
+        localStorage.setItem('user_info', JSON.stringify(userWithoutToken));
     }
 
     static getUserInfo() {
