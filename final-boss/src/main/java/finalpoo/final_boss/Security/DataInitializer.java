@@ -21,10 +21,12 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Crear Rol si no existe
-        // Forma correcta de usar la instancia inyectada:
+        // Crear Roles predeterminados si no existen
         RolEntity rolUser = rolRepository.findByNombreRol("ROLE_USER")
                 .orElseGet(() -> rolRepository.save(new RolEntity("ROLE_USER")));
+
+        RolEntity rolAdmin = rolRepository.findByNombreRol("ROLE_ADMIN")
+                .orElseGet(() -> rolRepository.save(new RolEntity("ROLE_ADMIN")));
 
         // Crear Usuario de prueba si no existe
         if (!usuarioRepository.existsByEmail("admin@empresa.com")) {
@@ -33,7 +35,7 @@ public class DataInitializer implements CommandLineRunner {
             usuario.setEmail("admin@empresa.com");
             // Cifra la contraseña "123456" usando BCrypt
             usuario.setPasswordHash(new BCryptPasswordEncoder().encode("123456"));
-            usuario.setRol(rolUser);
+            usuario.setRol(rolAdmin);
             usuarioRepository.save(usuario);
         }
     }

@@ -23,6 +23,11 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
+    public UsuarioEntity obtenerPorId(Long usuarioId) {
+        return usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
+    }
+
     public void cambiarRolUsuario(Long usuarioId, String nuevoRol) {
 
         UsuarioEntity usuario = usuarioRepository.findById(usuarioId)
