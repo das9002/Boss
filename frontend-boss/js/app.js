@@ -91,8 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await ApiService.login(email, password);
             Swal.fire({
                 icon: 'success',
-                title: '¡Bienvenido!',
-                text: 'Inicio de sesión exitoso',
+                title: 'Bienvenido',
+                text: 'Inicio de sesion exitoso',
                 timer: 1500,
                 showConfirmButton: false
             });
@@ -114,8 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await ApiService.register(nombre, email, password, rol);
             Swal.fire({
                 icon: 'success',
-                title: '¡Registro Exitoso!',
-                text: 'Tu cuenta ha sido creada correctamente',
+                title: 'Registro exitoso',
+                text: 'Cuenta creada correctamente',
                 timer: 1500,
                 showConfirmButton: false
             });
@@ -128,11 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutBtn.addEventListener('click', () => {
         Swal.fire({
-            title: '¿Cerrar sesión?',
-            text: 'Tendrás que ingresar tus credenciales de nuevo',
+            title: 'Cerrar sesion',
+            text: 'Tendra que ingresar sus credenciales nuevamente',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Sí, salir',
+            confirmButtonText: 'Aceptar',
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('auth-expired', () => {
         checkAuth();
-        showAuthAlert('Su sesión ha caducado. Inicie sesión nuevamente.', 'warning');
+        showAuthAlert('Su sesion ha caducado. Inicie sesion nuevamente.', 'warning');
     });
 
     function showAuthAlert(msg, type = 'error') {
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderProyectos(proyectos) {
         proyectosTableBody.innerHTML = '';
         if (proyectos.length === 0) {
-            proyectosTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay proyectos registrados</td></tr>';
+            proyectosTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay proyectos registrados</td></tr>';
             return;
         }
 
@@ -195,10 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${p.proyectoId}</td>
-                <td><strong>${escapeHtml(p.nombreProyecto)}</strong></td>
+                <td>${escapeHtml(p.nombreProyecto)}</td>
                 <td>${escapeHtml(p.descripcion || '-')}</td>
                 <td>$${p.presupuesto ? Number(p.presupuesto).toFixed(2) : '0.00'}</td>
-                <td><span class="status-badge status-${p.estado}">${escapeHtml(p.estado)}</span></td>
+                <td><span class="status-badge">${escapeHtml(p.estado)}</span></td>
                 <td>${escapeHtml(p.nombreUsuarioResponsable || 'Sin Asignar')}</td>
                 <td>
                     <button class="btn btn-secondary btn-sm edit-btn" data-id="${p.proyectoId}">Editar</button>
@@ -208,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
             proyectosTableBody.appendChild(tr);
         });
 
-        // Add event listeners for edit and delete
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', (e) => openEditProyectoModal(e.target.dataset.id));
         });
@@ -264,8 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 await ApiService.updateProyecto(currentEditingProyectoId, payload);
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Actualizado!',
-                    text: 'El proyecto se actualizó correctamente',
+                    title: 'Actualizado',
+                    text: 'Proyecto actualizado correctamente',
                     timer: 1500,
                     showConfirmButton: false
                 });
@@ -273,8 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 await ApiService.createProyecto(payload);
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Guardado!',
-                    text: 'El proyecto fue creado correctamente',
+                    title: 'Guardado',
+                    text: 'Proyecto creado correctamente',
                     timer: 1500,
                     showConfirmButton: false
                 });
@@ -292,13 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleDeleteProyecto(id) {
         const result = await Swal.fire({
-            title: '¿Está seguro?',
-            text: 'No podrá revertir esta acción',
+            title: 'Confirmar eliminacion',
+            text: 'Esta accion no se puede deshacer',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Sí, eliminar',
+            confirmButtonText: 'Eliminar',
             cancelButtonText: 'Cancelar'
         });
 
@@ -307,8 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 await ApiService.deleteProyecto(id);
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Eliminado!',
-                    text: 'El proyecto ha sido eliminado',
+                    title: 'Eliminado',
+                    text: 'Proyecto eliminado',
                     timer: 1500,
                     showConfirmButton: false
                 });
@@ -336,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderUsuarios(usuarios) {
         usuariosTableBody.innerHTML = '';
         if (usuarios.length === 0) {
-            usuariosTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay usuarios registrados</td></tr>';
+            usuariosTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay usuarios registrados</td></tr>';
             return;
         }
 
@@ -378,8 +375,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await ApiService.cambiarRol(userId, nuevoRol);
             Swal.fire({
                 icon: 'success',
-                title: 'Rol Actualizado',
-                text: 'El rol del usuario ha sido actualizado correctamente',
+                title: 'Rol actualizado',
+                text: 'El rol fue actualizado correctamente',
                 timer: 1500,
                 showConfirmButton: false
             });
