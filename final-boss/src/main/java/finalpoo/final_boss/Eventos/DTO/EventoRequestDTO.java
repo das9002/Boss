@@ -26,12 +26,8 @@ public record EventoRequestDTO(
         @Max(value = 24, message = "La cantidad de horas no puede exceder 24")
         Integer cantidadHoras,
 
-        @NotBlank(message = "El estado es obligatorio")
-        @Pattern(regexp = "^(PENDIENTE|CONFIRMADO|CANCELADO|FINALIZADO)$", message = "El estado debe ser PENDIENTE, CONFIRMADO, CANCELADO o FINALIZADO")
         String estado,
 
-        @NotNull(message = "El total de pago es obligatorio")
-        @Min(value = 0, message = "El total de pago no puede ser negativo")
         BigDecimal totalPago
 ) {
 }

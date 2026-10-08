@@ -10,6 +10,7 @@ import finalpoo.final_boss.Salones.Entity.SalonEntity;
 import finalpoo.final_boss.Salones.Repository.SalonRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,9 +46,15 @@ public class EventoService {
         SalonEntity salon = salonRepository.findById(dto.idSalon())
                 .orElseThrow(() -> new RuntimeException("Salón no encontrado con id: " + dto.idSalon()));
 
-        if (eventoRepository.existsByCliente_IdClienteAndNombreEventoAndFechaEvento(dto.idCliente(), dto.nombreEvento(), dto.fechaEvento())) {
-            throw new RuntimeException("Ya existe un evento con el mismo cliente, nombre y fecha.");
+        if (dto.cantidadPersonas() > salon.getCapacidad()) {
+            throw new RuntimeException("La cantidad de personas (" + dto.cantidadPersonas() + ") supera la capacidad máxima del salón (" + salon.getCapacidad() + ").");
         }
+
+        if (eventoRepository.existsByCliente_IdClienteAndNombreEventoAndFechaEvento(dto.idCliente(), dto.nombreEvento(), dto.fechaEvento())) {
+            throw new RuntimeException("Ya existe un evento registrado con el mismo cliente, nombre y fecha.");
+        }
+
+        BigDecimal totalCalculado = salon.getPrecioRenta().multiply(BigDecimal.valueOf(dto.cantidadHoras()));
 
         EventoEntity entity = new EventoEntity();
         entity.setCliente(cliente);
@@ -56,8 +63,8 @@ public class EventoService {
         entity.setFechaEvento(dto.fechaEvento());
         entity.setCantidadPersonas(dto.cantidadPersonas());
         entity.setCantidadHoras(dto.cantidadHoras());
-        entity.setEstado(dto.estado());
-        entity.setTotalPago(dto.totalPago());
+        entity.setEstado(dto.estado() != null ? dto.estado() : "PENDIENTE");
+        entity.setTotalPago(totalCalculado);
 
         EventoEntity guardado = eventoRepository.save(entity);
         return mapToDTO(guardado);
@@ -73,13 +80,19 @@ public class EventoService {
         SalonEntity salon = salonRepository.findById(dto.idSalon())
                 .orElseThrow(() -> new RuntimeException("Salón no encontrado con id: " + dto.idSalon()));
 
-        boolean cambionLlaveUnica = !entity.getCliente().getIdCliente().equals(dto.idCliente())
+        if (dto.cantidadPersonas() > salon.getCapacidad()) {
+            throw new RuntimeException("La cantidad de personas (" + dto.cantidadPersonas() + ") supera la capacidad máxima del salón (" + salon.getCapacidad() + ").");
+        }
+
+        boolean cambioLlaveUnica = !entity.getCliente().getIdCliente().equals(dto.idCliente())
                 || !entity.getNombreEvento().equalsIgnoreCase(dto.nombreEvento())
                 || !entity.getFechaEvento().equals(dto.fechaEvento());
 
-        if (cambionLlaveUnica && eventoRepository.existsByCliente_IdClienteAndNombreEventoAndFechaEvento(dto.idCliente(), dto.nombreEvento(), dto.fechaEvento())) {
-            throw new RuntimeException("Ya existe un evento con el mismo cliente, nombre y fecha.");
+        if (cambioLlaveUnica && eventoRepository.existsByCliente_IdClienteAndNombreEventoAndFechaEvento(dto.idCliente(), dto.nombreEvento(), dto.fechaEvento())) {
+            throw new RuntimeException("Ya existe un evento registrado con el mismo cliente, nombre y fecha.");
         }
+
+        BigDecimal totalCalculado = salon.getPrecioRenta().multiply(BigDecimal.valueOf(dto.cantidadHoras()));
 
         entity.setCliente(cliente);
         entity.setSalon(salon);
@@ -87,8 +100,10 @@ public class EventoService {
         entity.setFechaEvento(dto.fechaEvento());
         entity.setCantidadPersonas(dto.cantidadPersonas());
         entity.setCantidadHoras(dto.cantidadHoras());
-        entity.setEstado(dto.estado());
-        entity.setTotalPago(dto.totalPago());
+        if (dto.estado() != null) {
+            entity.setEstado(dto.estado());
+        }
+        entity.setTotalPago(totalCalculado);
 
         EventoEntity actualizado = eventoRepository.save(entity);
         return mapToDTO(actualizado);
